@@ -9,17 +9,7 @@ const sideBarStyle = {
   overflow: 'scroll'
 };
 
-const RouteFilter = ({ tags }) => {
-  const clickHandler = evt => {
-    console.log(evt.target.innerText)
-    const classList = evt.target.classList;
-    if(classList.contains('active')){
-      classList.remove('active');
-    }else{
-      classList.add('active');
-    }
-
-  }
+const RouteFilter = ( { tags, clickHandler } ) => {
   return (
     <div style={sideBarStyle}>
     <h4> Route Filter</h4>
