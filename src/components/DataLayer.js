@@ -36,7 +36,6 @@ const DataLayer = ({ children }) => {
     };
     fetchRouteData();
   }, []);
-  const style = { height: "500px" };
   const clickHandler = (evt) => {
     const tag = evt.target.innerText;
     const classList = evt.target.classList;

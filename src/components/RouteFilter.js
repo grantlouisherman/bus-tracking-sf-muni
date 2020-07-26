@@ -1,10 +1,9 @@
 import React from "react";
 
 const sideBarStyle = {
-  float: "right",
-  margin: 0,
+  margin: "50%",
   padding: 0,
-  width: "200px",
+  width: "500px",
   height: "500px",
   overflow: 'scroll'
 };
@@ -12,7 +11,7 @@ const RouteFilter = ( { tags, clickHandler } ) => {
   return (
     <div style={sideBarStyle}>
     <h4> Route Filter</h4>
-    <ul class="list-group" >
+    <ul class="list-group list-group-horizontal" >
       {tags && tags.map(tag =>
         <li onClick={clickHandler}
         key={tag}

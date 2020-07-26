@@ -4,8 +4,8 @@ import { API_KEY } from '../credentials';
 import { getMarkersForVehicles } from '../utils';
 
 const mapStyles = {
-  width: "50%",
-  height: "100%",
+  width: "100%",
+  height: "50%",
 };
 
 export const MapContainer = ({markers, isMarkersUpdated, google }) => {
@@ -30,6 +30,7 @@ export const MapContainer = ({markers, isMarkersUpdated, google }) => {
       google={google}
       zoom={11}
       style={mapStyles}
+      className='col'
       initialCenter={{
         lat: 37.773972,
         lng: -122.431297,
