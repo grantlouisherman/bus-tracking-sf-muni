@@ -9,6 +9,7 @@ const DataLayer = ({ children }) => {
   const [tags, setTags] = useState([]);
   const [isMarkersUpdated, setMarkerUpdate] = useState(false);
   const [dataFetchingInterval, setDataFetchingInterval ] = useState(15000);
+  const [ initialRender, setInitialRender ] = useState(false);
   const MAX_DELAY = 2147483647;
   useEffect(() => {
     const fetchRouteData = async () => {
@@ -24,8 +25,6 @@ const DataLayer = ({ children }) => {
       const tags = Object.keys(routeConfig.route).map(
         (routeKey) => routeConfig.route[routeKey].tag
       );
-
-      console.log(titles)
       const routes = await Promise.all(
         tags.map(async (tag) => {
           const routeData = await fetchVehicleLocation(tag, 0);
@@ -40,7 +39,11 @@ const DataLayer = ({ children }) => {
 
       setMarkers(routeConfigTable);
       setMarkerUpdate(!isMarkersUpdated);
-      setTags(tags);
+
+      if(!initialRender){
+        setInitialRender(true);
+        setTags(tags);
+      }
     };
     fetchRouteData();
   }, []);
