@@ -5,10 +5,9 @@ const sideBarStyle = {
   margin: 0,
   padding: 0,
   width: "200px",
-  height: "50%",
+  height: "500px",
   overflow: 'scroll'
 };
-
 const RouteFilter = ( { tags, clickHandler } ) => {
   return (
     <div style={sideBarStyle}>

@@ -8,9 +8,8 @@ const mapStyles = {
   height: "100%",
 };
 
-export const MapContainer = ({ markers, google, isMarkersUpdated }) => {
+export const MapContainer = ({markers, isMarkersUpdated, google }) => {
   useEffect(() => {
-    console.log('use', markers)
   }, [ markers, isMarkersUpdated ])
   const createMarkers = () => Object.keys(markers)
   .filter(markerKey => !markers[markerKey].isFilteredOut)
@@ -36,7 +35,7 @@ export const MapContainer = ({ markers, google, isMarkersUpdated }) => {
         lng: -122.431297,
       }}
     >
-      { markers && createMarkers() }
+      { createMarkers() }
     </Map>
   )
 };
