@@ -10,13 +10,20 @@ const mapStyles = {
 
 export const MapContainer = ({ markers, google, isMarkersUpdated }) => {
   useEffect(() => {
-
-  }, [isMarkersUpdated])
-
+    console.log('use', markers)
+  }, [ markers, isMarkersUpdated ])
   const createMarkers = () => Object.keys(markers)
   .filter(markerKey => !markers[markerKey].isFilteredOut)
   .map((routeKey) => {
     const { vehicle, isFilteredOut } = markers[routeKey];
+    // when there is only one vehicle vehicle returns plain Object
+    // so must addd that to Array
+    // TODO: need to handle this better
+    if(vehicle && !Array.isArray(vehicle)){
+      let vehicleData = [];
+      vehicleData.push(vehicle);
+      return getMarkersForVehicles(vehicleData);
+    }
     return vehicle && getMarkersForVehicles(vehicle);
   });
   return (
