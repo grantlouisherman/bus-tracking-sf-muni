@@ -9,7 +9,7 @@ const mapStyles = {
 };
 
 export const MapContainer = ({markers, isMarkersUpdated, google }) => {
-  useEffect(() => {
+  useEffect(() => { console.log(isMarkersUpdated)
   }, [ markers, isMarkersUpdated ])
   const createMarkers = () => Object.keys(markers)
   .filter(markerKey => !markers[markerKey].isFilteredOut)

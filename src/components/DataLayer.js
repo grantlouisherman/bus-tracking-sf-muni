@@ -82,7 +82,6 @@ const DataLayer = ({ children }) => {
 
   }
   const timer = setInterval(() => {
-    console.log('HI')
     // fetchDataAtInterval();
   }, dataFetchingInterval);
   const childrenWithProps = children.map(child =>

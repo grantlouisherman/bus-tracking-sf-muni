@@ -1,7 +1,6 @@
 import React from "react";
 
 const sideBarStyle = {
-  margin: "50%",
   padding: 0,
   width: "500px",
   height: "500px",

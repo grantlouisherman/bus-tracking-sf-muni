@@ -12,6 +12,8 @@ import {
 import MapContainer from "./components/Map";
 import RouteFilter from "./components/RouteFilter";
 import DataLayer from "./components/DataLayer";
+import Cards from "./components/Cards";
+
 const App = () => {
   return (
     <div className='container'>
@@ -19,7 +21,7 @@ const App = () => {
     <DataLayer>
       <MapContainer />
       <RouteFilter/>
-      <div>CARDS WILL GO HERE</div>
+      <Cards/>
     </DataLayer>
     </div>
     </div>
