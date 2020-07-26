@@ -18,7 +18,7 @@ const App = () => {
   const [tags, setTags] = useState([]);
   const [isMarkersUpdated, setMarkerUpdate] = useState(false);
 
-  useEffect(async () => {
+  useEffect(() => {
     const fetchRouteData = async () => {
       const routeConfigResponse = await fetchRoutes();
       const routeConfig = await routeConfigResponse.json();
