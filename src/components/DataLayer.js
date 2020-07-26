@@ -14,11 +14,18 @@ const DataLayer = ({ children }) => {
     const fetchRouteData = async () => {
       const routeConfigResponse = await fetchRoutes();
       const routeConfig = await routeConfigResponse.json();
-
+      let titleLookUp = {}
+      const titles = Object.keys(routeConfig.route).forEach(
+        (routeKey) => {
+          const tag = routeConfig.route[routeKey].tag
+          const title = routeConfig.route[routeKey].title
+          titleLookUp[tag] = title;
+        });
       const tags = Object.keys(routeConfig.route).map(
         (routeKey) => routeConfig.route[routeKey].tag
       );
 
+      console.log(titles)
       const routes = await Promise.all(
         tags.map(async (tag) => {
           const routeData = await fetchVehicleLocation(tag, 0);
@@ -27,7 +34,8 @@ const DataLayer = ({ children }) => {
       );
       const routeConfigTable = {};
       routes.forEach((route, idx) => {
-        routeConfigTable[tags[idx]] = { ...route, isFilteredOut: true };
+        const tag = tags[idx];
+        routeConfigTable[tag] = { ...route, isFilteredOut: true, title: titleLookUp[tag]};
       });
 
       setMarkers(routeConfigTable);
@@ -37,7 +45,7 @@ const DataLayer = ({ children }) => {
     fetchRouteData();
   }, []);
   const clickHandler = (evt) => {
-    const tag = evt.target.innerText;
+    const tag = evt.target.id;
     const classList = evt.target.classList;
     let newMarkers = markers;
     if (classList.contains("active")) {

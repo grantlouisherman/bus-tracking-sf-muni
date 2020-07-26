@@ -6,7 +6,7 @@ const sideBarStyle = {
   height: "500px",
   overflow: 'scroll'
 };
-const RouteFilter = ( { tags, clickHandler } ) => {
+const RouteFilter = ( { markers, tags, clickHandler } ) => {
   return (
     <div style={sideBarStyle}>
     <h4> Route Filter</h4>
@@ -14,8 +14,9 @@ const RouteFilter = ( { tags, clickHandler } ) => {
       {tags && tags.map(tag =>
         <li onClick={clickHandler}
         key={tag}
+        id={tag}
         className="list-group-item active">
-        {tag}
+        {markers[tag].title}
         </li>)}
     </ul>
     </div>

@@ -16,5 +16,5 @@ export const getMarkersForVehicles = (vehicle) =>
   ));
 
 export const getCardsForRoutes = (markers) => Object.keys(markers).map((markerKey) => (
-  <Card routeName={markerKey} vehicle={markers[markerKey].vehicle } />
+  <Card title={markers[markerKey].title} routeName={markerKey} vehicle={markers[markerKey].vehicle } />
 ));
