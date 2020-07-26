@@ -17,7 +17,7 @@ const RouteFilter = ( { tags, clickHandler } ) => {
       {tags && tags.map(tag =>
         <li onClick={clickHandler}
         key={tag}
-        className="list-group-item">
+        className="list-group-item active">
         {tag}
         </li>)}
     </ul>

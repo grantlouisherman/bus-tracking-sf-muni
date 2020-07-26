@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Map, GoogleApiWrapper } from "google-maps-react";
 import { API_KEY } from '../credentials';
 import { getMarkersForVehicles } from '../utils';
@@ -9,19 +9,20 @@ const mapStyles = {
 };
 
 export const MapContainer = ({ markers, google, isMarkersUpdated }) => {
-  useEffect(() => { console.log('') }, [isMarkersUpdated])
+  useEffect(() => {
+
+  }, [isMarkersUpdated])
+
   const createMarkers = () => Object.keys(markers)
   .filter(markerKey => !markers[markerKey].isFilteredOut)
   .map((routeKey) => {
     const { vehicle, isFilteredOut } = markers[routeKey];
-    if(vehicle && !isFilteredOut){
-      return getMarkersForVehicles(vehicle);
-    }
+    return vehicle && getMarkersForVehicles(vehicle);
   });
   return (
     <Map
       google={google}
-      zoom={14}
+      zoom={11}
       style={mapStyles}
       initialCenter={{
         lat: 37.773972,

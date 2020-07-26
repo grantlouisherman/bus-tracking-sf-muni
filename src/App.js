@@ -1,79 +1,95 @@
-import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useState, useRef } from "react";
+import logo from "./logo.svg";
 import { Marker } from "google-maps-react";
-import _ from 'lodash';
+import _ from "lodash";
 
-import { fetchRoutes, fetchVehicleLocation, getMarkersForVehicles } from './utils';
+import {
+  fetchRoutes,
+  fetchVehicleLocation,
+  getMarkersForVehicles,
+} from "./utils";
 
-import MapContainer from './components/Map';
-import RouteFilter from './components/RouteFilter';
+import MapContainer from "./components/Map";
+import RouteFilter from "./components/RouteFilter";
 
 const App = () => {
-  const [ markers, setMarkers ] = useState([]);
-  const [ tags, setTags ] = useState([]);
-  const [ initialRender, setInitialRender ] = useState(false);
-  const [ isMarkersUpdated, setMarkerUpdate ] = useState(false);
-  useEffect( async () => {
+  const markersRef = useRef({});
+  const [markers, setMarkers] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [isMarkersUpdated, setMarkerUpdate] = useState(false);
+
+  useEffect(async () => {
     const fetchRouteData = async () => {
       const routeConfigResponse = await fetchRoutes();
       const routeConfig = await routeConfigResponse.json();
 
-      const tags = Object.keys(routeConfig.route)
-      .map(routeKey => routeConfig.route[routeKey].tag);
+      const tags = Object.keys(routeConfig.route).map(
+        (routeKey) => routeConfig.route[routeKey].tag
+      );
 
-      const routes = await Promise.all(tags.map(async (tag) => {
-        const routeData = await fetchVehicleLocation(tag, 0);
-        return routeData.json();
-      }));
-
+      const routes = await Promise.all(
+        tags.map(async (tag) => {
+          const routeData = await fetchVehicleLocation(tag, 0);
+          return routeData.json();
+        })
+      );
       const routeConfigTable = {};
       routes.forEach((route, idx) => {
-        routeConfigTable[tags[idx]] = { ...route, isFilteredOut:false};
-      })
-      setMarkers(routeConfigTable)
+        routeConfigTable[tags[idx]] = { ...route, isFilteredOut: true };
+      });
+      markersRef.current.markers = routeConfigTable;
       setTags(tags);
-      setInitialRender(true);
-    }
+    };
     fetchRouteData();
   }, []);
-  const style = { height: "500px"}
-
-  const clickHandler = evt => {
+  const style = { height: "500px" };
+  const clickHandler = (evt) => {
     const tag = evt.target.innerText;
     const classList = evt.target.classList;
-    if(classList.contains('active')){
-      classList.remove('active');
-      const newMarkers = markers;
+    const newMarkers = markersRef.current.markers;
+    if (classList.contains("active")) {
+      classList.remove("active");
       newMarkers[tag].isFilteredOut = false;
-      setMarkers(newMarkers);
+      markersRef.current.markers = newMarkers;
       setMarkerUpdate(!isMarkersUpdated);
-    }else{
-      classList.add('active');
-      const newMarkers = markers;
+    } else {
+      classList.add("active");
       newMarkers[tag].isFilteredOut = true;
-      setMarkers(newMarkers);
+      markersRef.current.markers = newMarkers;
       setMarkerUpdate(!isMarkersUpdated);
     }
-  }
-  console.log(markers)
-  // const fetchDataAtInterval = setInterval(async () => {
-  //     const routes = await Promise.all(tags.map(async (tag) => {
-  //       const routeData = await fetchVehicleLocation(tag, 0);
-  //       return routeData.json();
-  //     }));
-  //     setMarkers(routes)
-  //   }, 15000)
-
-  // const fnDeterminer = initialRender ? _.throttle(createMarkers, 1000) : createMarkers();
-  return (
-    [
-      <MapContainer markers={markers} isMarkersUpdated={isMarkersUpdated} />,
-      <div style={style}>
-        <RouteFilter tags={tags} clickHandler={clickHandler.bind(this)}/>
-      </div>
-    ]
-  )
-}
+  };
+  const fetchDataAtInterval = setInterval(async () => {
+    console.log('hoi')
+    const routes = await Promise.all(
+      tags.map(async (tag) => {
+        const routeData = await fetchVehicleLocation(tag, 0);
+        return routeData.json();
+      })
+    );
+    const routeConfigTable = {};
+    routes.forEach((route, idx) => {
+      routeConfigTable[tags[idx]] = { ...route };
+    });
+    Object.keys(routeConfigTable).forEach((routeKey) => {
+      const { isFilteredOut } = markersRef.current.markers[routeKey];
+      routeConfigTable[routeKey] = {
+        ...routeConfigTable[routeKey],
+        isFilteredOut
+      };
+    });
+    if (Object.keys(routeConfigTable).length) {
+      markersRef.current.markers = routeConfigTable;
+      setMarkerUpdate(!isMarkersUpdated);
+    }
+  }, 1000);
+  return [
+    <MapContainer markers={markersRef.current.markers} isMarkersUpdated={isMarkersUpdated} />,
+    <div style={style}>
+      <RouteFilter tags={tags} clickHandler={clickHandler.bind(this)} />
+    </div>,
+  ];
+};
 
 export default App;
 
