@@ -3,12 +3,18 @@ import Card from './Card';
 
 import { getCardsForRoutes } from '../utils';
 
+const cardsStyle = {
+  padding: 0,
+  position: "absolute",
+  top: "70%",
+  "margin-right": "-50%,"
+}
 const Cards = (props) => {
-  const { markers } = props;
+  const { markers, isMarkersUpdated } = props;
   return (
-    <div>
+    <div style={cardsStyle}>
     <h4>Current Cross Streets of Buses</h4>
-    { markers && getCardsForRoutes(markers) }
+    { markers && getCardsForRoutes(markers, isMarkersUpdated) }
     </div>
     );
 };

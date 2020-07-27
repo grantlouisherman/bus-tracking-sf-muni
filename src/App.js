@@ -15,13 +15,13 @@ import DataLayer from "./components/DataLayer";
 import Cards from "./components/Cards";
 
 const App = () => {
+  // <Cards/>
   return (
     <div className='container'>
     <div className='row'>
     <DataLayer>
       <MapContainer />
       <RouteFilter/>
-      <Cards/>
     </DataLayer>
     </div>
     </div>

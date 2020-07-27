@@ -4,14 +4,15 @@ import { API_KEY } from '../credentials';
 import { getMarkersForVehicles } from '../utils';
 
 const mapStyles = {
-  width: "100%",
+  width: "70%",
   height: "50%",
 };
 
 export const MapContainer = ({markers, isMarkersUpdated, google }) => {
   useEffect(() => { }, [ markers, isMarkersUpdated ])
+  console.log(markers)
   const createMarkers = () => Object.keys(markers)
-  .filter(markerKey => !markers[markerKey].isFilteredOut)
+  .filter(markerKey => markers && markers[markerKey] && !markers[markerKey].isFilteredOut)
   .map((routeKey) => {
     const { vehicle, isFilteredOut } = markers[routeKey];
     // when there is only one vehicle vehicle returns plain Object
