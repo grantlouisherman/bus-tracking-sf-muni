@@ -13,7 +13,6 @@ export const fetchVehicleLocation = async (routeTag) =>
     `http://webservices.nextbus.com/service/publicJSONFeed?command=vehicleLocations&a=sf-muni&r=${routeTag}&t=0`
   );
 
-// https://maps.googleapis.com/maps/api/geocode/json?latlng=37.795361,-122.397301&key=AIzaSyCxuukMo4pelCWyisxp5OrdrtbQCAk0Izg
 export const fetchReverseGeoCode = async (lat, long) =>
   await fetch(
     `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${API_KEY}`

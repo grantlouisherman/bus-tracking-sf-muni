@@ -11,6 +11,7 @@ const cardsStyle = {
 }
 const Cards = (props) => {
   const { markers, isMarkersUpdated } = props;
+  useEffect(() => {}, [isMarkersUpdated])
   return (
     <div style={cardsStyle}>
     <h4>Current Cross Streets of Buses</h4>
