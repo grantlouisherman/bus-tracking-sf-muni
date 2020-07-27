@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Map, GoogleApiWrapper } from "google-maps-react";
+import _ from 'lodash';
+
 import { API_KEY } from '../credentials';
 import { getMarkersForVehicles } from '../utils';
 
@@ -24,6 +26,7 @@ export const MapContainer = ({markers, isMarkersUpdated, google }) => {
     }
     return vehicle && getMarkersForVehicles(vehicle, google);
   });
+  const throttleCreateMarkers = _.throttle(createMarkers, 15000);
   return (
     <Map
       google={google}
@@ -35,7 +38,7 @@ export const MapContainer = ({markers, isMarkersUpdated, google }) => {
         lng: -122.431297,
       }}
     >
-      { createMarkers() }
+      { throttleCreateMarkers() }
     </Map>
   )
 };

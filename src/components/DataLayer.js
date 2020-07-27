@@ -20,7 +20,7 @@ const DataLayer = ({ children }) => {
     const updatedRouteConfigTable = updateOldDataWithNewVehicleLocations(routes, markers);
     setMarkers(updatedRouteConfigTable);
     setMarkerUpdate(!isMarkersUpdated)
-    setDataFetchingInterval(15000);
+    setDataFetchingInterval(dataFetchingInterval*2);
   }
   const timer = setInterval(() => {
     fetchDataAtInterval();
