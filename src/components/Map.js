@@ -10,7 +10,6 @@ const mapStyles = {
 
 export const MapContainer = ({markers, isMarkersUpdated, google }) => {
   useEffect(() => { }, [ markers, isMarkersUpdated ])
-  console.log(markers)
   const createMarkers = () => Object.keys(markers)
   .filter(markerKey => markers && markers[markerKey] && !markers[markerKey].isFilteredOut)
   .map((routeKey) => {
@@ -23,7 +22,7 @@ export const MapContainer = ({markers, isMarkersUpdated, google }) => {
       vehicleData.push(vehicle);
       return getMarkersForVehicles(vehicleData);
     }
-    return vehicle && getMarkersForVehicles(vehicle);
+    return vehicle && getMarkersForVehicles(vehicle, google);
   });
   return (
     <Map

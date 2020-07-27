@@ -18,9 +18,9 @@ export const fetchReverseGeoCode = async (lat, long) =>
     `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${API_KEY}`
   );
 
-export const getMarkersForVehicles = (vehicle) =>
+export const getMarkersForVehicles = (vehicle, google) =>
   vehicle.map(({ id, lat, lon }) => (
-    <Marker key={id} position={{ lat, lng: lon }} tracksViewChanges={false} />
+    <Marker key={id} position={{ lat, lng: lon }} animation={google.maps.Animation.DROP} />
   ));
 
 export const getCardsForRoutes = (markers, isMarkersUpdated) =>
@@ -41,18 +41,26 @@ export const createRoutesFromTags = async (tags) =>
     })
   );
 
-export const createRoutesAndTitleLookUp = async () => {
+export const createRouteConfig = async () => {
   const routeConfigResponse = await fetchRoutes();
   const routeConfig = await routeConfigResponse.json();
+  return routeConfig;
+}
+export const createTagsAndTitles = ({route}) => {
   let titleLookUp = {};
-  const titles = Object.keys(routeConfig.route).forEach((routeKey) => {
-    const tag = routeConfig.route[routeKey].tag;
-    const title = routeConfig.route[routeKey].title;
+  const titles = Object.keys(route).forEach((routeKey) => {
+    const tag = route[routeKey].tag;
+    const title = route[routeKey].title;
     titleLookUp[tag] = title;
   });
-  const tags = Object.keys(routeConfig.route).map(
-    (routeKey) => routeConfig.route[routeKey].tag
+  const tags = Object.keys(route).map(
+    (routeKey) => route[routeKey].tag
   );
+  return { titleLookUp, tags };
+}
+export const createRoutesAndTags = async () => {
+  const routeConfigResponse = await createRouteConfig();
+  const { title, tags, titleLookUp } = createTagsAndTitles(routeConfigResponse);
   const routes = await createRoutesFromTags(tags);
   return { routes, titleLookUp, tags };
 };
@@ -69,3 +77,38 @@ export const createRouteConfigTable = (routes, titleLookUp, tags) => {
   });
   return routeConfigTable;
 };
+
+export const updateOldDataWithNewVehicleLocations = (newRoutes, markers) => {
+  const routeConfigTable = newRoutes.map(newRoute => {
+    if(Array.isArray(newRoute.vehicle)){
+      const vehicle = newRoute.vehicle;
+      const { routeTag } = vehicle[0];
+      return { routeTag, vehicle };
+    }
+  });
+  const newMarkers = markers;
+
+  for(const routeKey in markers){
+    const { vehicle } = newMarkers[routeKey];
+    const updatedData = routeConfigTable[routeKey];
+    if(updatedData && updatedData.vehicle){
+      newMarkers[routeKey].vehicle = updatedData.vehicle;
+    }
+  }
+  return newMarkers;
+}
+
+export const updateMapWithFilter = (domClassList, markers, routeTag) => {
+  const shouldShowMarkers = () => {
+    domClassList.remove("active");
+    markers[routeTag].isFilteredOut = false;
+    return markers;
+  }
+  const shouldFilterOutMarkers = () => {
+    domClassList.add("active");
+    markers[routeTag].isFilteredOut = true;
+    return markers;
+  }
+  return domClassList.contains("active") ?
+  shouldShowMarkers() : shouldFilterOutMarkers();
+}

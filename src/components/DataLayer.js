@@ -3,9 +3,11 @@ import {
   fetchRoutes,
   fetchVehicleLocation,
   getMarkersForVehicles,
-  createRoutesAndTitleLookUp,
+  createRoutesAndTags,
   createRoutesFromTags,
   createRouteConfigTable,
+  updateOldDataWithNewVehicleLocations,
+  updateMapWithFilter
 } from "../utils";
 const DataLayer = ({ children }) => {
   const [markers, setMarkers] = useState([]);
@@ -15,39 +17,18 @@ const DataLayer = ({ children }) => {
   const MAX_DELAY = 2147483647;
   const fetchDataAtInterval = async () => {
     const routes = await createRoutesFromTags(tags);
-    const routeConfigTable = routes.map(route => {
-      if(Array.isArray(route.vehicle)){
-        const vehicle = route.vehicle;
-        const { routeTag } = vehicle[0];
-        return { routeTag, vehicle };
-      }
-    });
-    const currentMarkers = markers;
-
-    for(const routeKey in currentMarkers){
-      const { vehicle } = currentMarkers[routeKey];
-      const updatedData = routeConfigTable[routeKey];
-      if(updatedData && updatedData.vehicle){
-        currentMarkers[routeKey].vehicle = updatedData.vehicle;
-      }
-    }
-
-    if (Object.keys(currentMarkers).length) {
-      setMarkers(currentMarkers);
-      setMarkerUpdate(!isMarkersUpdated)
-    }
-    if(dataFetchingInterval*2 <= MAX_DELAY){
-      setDataFetchingInterval(dataFetchingInterval*2);
-    }else {
-      setDataFetchingInterval(15000);
-    }
+    const updatedRouteConfigTable = updateOldDataWithNewVehicleLocations(routes, markers);
+    setMarkers(updatedRouteConfigTable);
+    setMarkerUpdate(!isMarkersUpdated)
+    setDataFetchingInterval(15000);
   }
   const timer = setInterval(() => {
     fetchDataAtInterval();
   }, dataFetchingInterval);
+
   useEffect(() => {
     const fetchRouteData = async () => {
-      const { routes, titleLookUp, tags } = await createRoutesAndTitleLookUp();
+      const { routes, titleLookUp, tags } = await createRoutesAndTags();
       const routeConfigTable = await createRouteConfigTable(routes, titleLookUp, tags);
       setMarkers(routeConfigTable);
       setMarkerUpdate(!isMarkersUpdated);
@@ -63,18 +44,9 @@ const DataLayer = ({ children }) => {
   const clickHandler = (evt) => {
     const tag = evt.target.id;
     const classList = evt.target.classList;
-    let newMarkers = markers;
-    if (classList.contains("active")) {
-      classList.remove("active");
-      newMarkers[tag].isFilteredOut = false;
-      setMarkers(newMarkers);
-      setMarkerUpdate(!isMarkersUpdated);
-    } else {
-      classList.add("active");
-      newMarkers[tag].isFilteredOut = true;
-      setMarkers(newMarkers);
-      setMarkerUpdate(!isMarkersUpdated);
-    }
+    let newMarkers = updateMapWithFilter(classList, markers, tag);
+    setMarkers(newMarkers);
+    setMarkerUpdate(!isMarkersUpdated);
   };
 
   const childrenWithProps = children.map(child =>
