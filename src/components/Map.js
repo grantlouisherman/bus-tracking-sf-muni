@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Map, GoogleApiWrapper } from "google-maps-react";
+import { Map, GoogleApiWrapper, Polyline } from "google-maps-react";
 import _ from 'lodash';
 
 import { API_KEY } from '../credentials';
-import { getMarkersForVehicles } from '../utils';
+import { getMarkersForVehicles, getPolylinesForRoutes } from '../utils';
 
 const mapStyles = {
   width: "70%",
@@ -11,20 +11,22 @@ const mapStyles = {
 };
 
 export const MapContainer = ({markers, isMarkersUpdated, google }) => {
+  const [ stops, setStops ] = useState([]);
   useEffect(() => { }, [ markers, isMarkersUpdated ])
-  const createMarkers = () => Object.keys(markers)
+  const printRef = ref => {}
+  const createMarkers = () => markers && Object.keys(markers)
   .filter(markerKey => markers && markers[markerKey] && !markers[markerKey].isFilteredOut)
   .map((routeKey) => {
-    const { vehicle, isFilteredOut } = markers[routeKey];
+    const { vehicle, isFilteredOut, stops } = markers[routeKey];
     // when there is only one vehicle vehicle returns plain Object
     // so must addd that to Array
     // TODO: need to handle this better
     if(vehicle && !Array.isArray(vehicle)){
       let vehicleData = [];
       vehicleData.push(vehicle);
-      return getMarkersForVehicles(vehicleData);
+      return [ getMarkersForVehicles(vehicleData), getPolylinesForRoutes(stops, google)]
     }
-    return vehicle && getMarkersForVehicles(vehicle, google);
+    return vehicle && [ getMarkersForVehicles(vehicle, google, printRef.bind(this)), getPolylinesForRoutes(stops, google)];
   });
   const throttleCreateMarkers = _.throttle(createMarkers, 15000);
   return (
@@ -37,6 +39,7 @@ export const MapContainer = ({markers, isMarkersUpdated, google }) => {
         lat: 37.773972,
         lng: -122.431297,
       }}
+      layerTypes={["TrafficLayer"]}
     >
       { throttleCreateMarkers() }
     </Map>

@@ -9,8 +9,7 @@ const sideBarStyle = {
   "margin-right": "-60%",
   "margin-bottom": "-10%"
 };
-const RouteFilter = ( { markers, tags, clickHandler } ) => {
-  return (
+const RouteFilter = ( { markers, tags, clickHandler } ) => (
     <div className='row'>
     <div className='col' style={sideBarStyle}>
     <ul class="list-group list-group-horizontal" >
@@ -26,7 +25,6 @@ const RouteFilter = ( { markers, tags, clickHandler } ) => {
     </div>
     </div>
   );
-};
 
 export default RouteFilter;
 /*
