@@ -3,7 +3,7 @@ import { Map, GoogleApiWrapper, Polyline } from "google-maps-react";
 import _ from 'lodash';
 
 import { API_KEY } from '../credentials';
-import { getMarkersForVehicles, getPolylinesForRoutes } from '../utils';
+import { getMarkersForVehicles, getPolylinesForRoutes, getMostUpToDateMarkerData } from '../utils';
 
 const mapStyles = {
   width: "70%",
@@ -12,9 +12,8 @@ const mapStyles = {
 
 export const MapContainer = ({markers, isMarkersUpdated, google, intervalDataRef }) => {
   useEffect(() => { }, [ markers, isMarkersUpdated, intervalDataRef.current.isMarkersUpdated ])
-  const printRef = ref => {}
-  const getMostUpToDateMarkerData = intervalDataRef.current.isIntervalStarted ? intervalDataRef.current.markers : markers;
-  const createMarkers = () => getMostUpToDateMarkerData && Object.keys(getMostUpToDateMarkerData)
+  const data = getMostUpToDateMarkerData(intervalDataRef, markers);
+  const createMarkers = () => data && Object.keys(data)
   .filter(markerKey => markers && markers[markerKey] && !markers[markerKey].isFilteredOut)
   .map((routeKey) => {
     const { vehicle, isFilteredOut, stops } = markers[routeKey];
@@ -26,7 +25,7 @@ export const MapContainer = ({markers, isMarkersUpdated, google, intervalDataRef
       vehicleData.push(vehicle);
       return [ getMarkersForVehicles(vehicleData), getPolylinesForRoutes(stops, google)]
     }
-    return vehicle && [ getMarkersForVehicles(vehicle, google, printRef.bind(this)), getPolylinesForRoutes(stops, google)];
+    return vehicle && [ getMarkersForVehicles(vehicle, google), getPolylinesForRoutes(stops, google)];
   });
   const throttleCreateMarkers = _.throttle(createMarkers, 1000);
   return (

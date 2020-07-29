@@ -27,8 +27,9 @@ const DataLayer = ({ children }) => {
     setMarkerUpdate(!isMarkersUpdated)
     intervalDataRef.current.isIntervalStarted = true;
   }
-  const timer = setInterval(async () => {
+  const timer = setInterval(() => {
     fetchDataAtInterval();
+    clearInterval(timer);
   }, dataFetchingInterval);
 
   useEffect(() => {

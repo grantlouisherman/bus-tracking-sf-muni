@@ -23,13 +23,12 @@ export const fetchRouteStops = async (routeTag) =>
     `http://webservices.nextbus.com/service/publicJSONFeed?command=routeConfig&a=sf-muni&r=${routeTag}`
   );
 
-export const getMarkersForVehicles = (vehicle, google, printRef) =>
+export const getMarkersForVehicles = (vehicle, google) =>
   vehicle.map(({ id, lat, lon }) => (
     <Marker
       key={id}
       position={{ lat, lng: lon }}
       animation={google.maps.Animation.DROP}
-      ref={printRef}
     />
   ));
 
@@ -154,3 +153,7 @@ export const createStops = (stops) => {
   });
   return stopTable;
 };
+
+export const getMostUpToDateMarkerData = (intervalData, initialMarkerData) => (
+  intervalData.current.isIntervalStarted ? intervalData.current.markers : initialMarkerData
+)
