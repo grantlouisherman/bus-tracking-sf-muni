@@ -12,10 +12,21 @@ const cardsStyle = {
 const Cards = (props) => {
   const { markers, isMarkersUpdated } = props;
   useEffect(() => {}, [isMarkersUpdated])
+  const filteredOutMarkers = {};
+  for( const markerKey in markers){
+    const { isFilteredOut } = markers[markerKey];
+    if(!isFilteredOut){
+      filteredOutMarkers[markerKey] = markers[markerKey];
+    }
+  }
   return (
     <div style={cardsStyle}>
-    <h4>Current Cross Streets of Buses</h4>
-    { markers && getCardsForRoutes(markers, isMarkersUpdated) }
+    <h4>Current Cross of Active Lines</h4>
+    {
+      Object.keys(filteredOutMarkers).length ?
+      getCardsForRoutes(filteredOutMarkers, isMarkersUpdated) :
+      <div>No active lines at this time</div>
+    }
     </div>
     );
 };

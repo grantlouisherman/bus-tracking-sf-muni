@@ -1,4 +1,5 @@
 import React, { useEffect, useState, cloneElement, useRef } from 'react';
+import _ from 'lodash';
 import {
   fetchRoutes,
   fetchVehicleLocation,
@@ -12,6 +13,7 @@ import {
   createStops
 } from "../utils";
 const DataLayer = ({ children }) => {
+  const intervalDataRef = useRef({});
   const [markers, setMarkers] = useState([]);
   const [stops, setStops] = useState([]);
   const [tags, setTags] = useState([]);
@@ -21,13 +23,13 @@ const DataLayer = ({ children }) => {
   const fetchDataAtInterval = async () => {
     const routes = await createRoutesFromTags(tags);
     const updatedRouteConfigTable = updateOldDataWithNewVehicleLocations(routes, markers);
-    setMarkers(updatedRouteConfigTable);
+    intervalDataRef.current.markers = updatedRouteConfigTable;
     setMarkerUpdate(!isMarkersUpdated)
-    setDataFetchingInterval(dataFetchingInterval*2);
+    intervalDataRef.current.isIntervalStarted = true;
   }
-  // const timer = setInterval(() => {
-  //   fetchDataAtInterval();
-  // }, dataFetchingInterval);
+  const timer = setInterval(async () => {
+    fetchDataAtInterval();
+  }, dataFetchingInterval);
 
   useEffect(() => {
     const fetchRouteData = async () => {
@@ -45,9 +47,6 @@ const DataLayer = ({ children }) => {
     fetchRouteData();
   }, []);
 
-  useEffect(() => {
-    // clearInterval(timer);
-  }, [dataFetchingInterval])
 
   const clickHandler = (evt) => {
     const tag = evt.target.id;
@@ -58,7 +57,7 @@ const DataLayer = ({ children }) => {
   };
 
   const childrenWithProps = children.map(child =>
-    cloneElement(child, { markers , tags, isMarkersUpdated, clickHandler:clickHandler.bind(this) } ));
+    cloneElement(child, { intervalDataRef, markers , tags, isMarkersUpdated, clickHandler:clickHandler.bind(this) } ));
   return (
     <div>
     { childrenWithProps }

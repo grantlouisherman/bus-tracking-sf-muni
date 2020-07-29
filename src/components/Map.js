@@ -10,11 +10,11 @@ const mapStyles = {
   height: "50%",
 };
 
-export const MapContainer = ({markers, isMarkersUpdated, google }) => {
-  const [ stops, setStops ] = useState([]);
-  useEffect(() => { }, [ markers, isMarkersUpdated ])
+export const MapContainer = ({markers, isMarkersUpdated, google, intervalDataRef }) => {
+  useEffect(() => { }, [ markers, isMarkersUpdated, intervalDataRef.current.isMarkersUpdated ])
   const printRef = ref => {}
-  const createMarkers = () => markers && Object.keys(markers)
+  const getMostUpToDateMarkerData = intervalDataRef.current.isIntervalStarted ? intervalDataRef.current.markers : markers;
+  const createMarkers = () => getMostUpToDateMarkerData && Object.keys(getMostUpToDateMarkerData)
   .filter(markerKey => markers && markers[markerKey] && !markers[markerKey].isFilteredOut)
   .map((routeKey) => {
     const { vehicle, isFilteredOut, stops } = markers[routeKey];
@@ -28,7 +28,7 @@ export const MapContainer = ({markers, isMarkersUpdated, google }) => {
     }
     return vehicle && [ getMarkersForVehicles(vehicle, google, printRef.bind(this)), getPolylinesForRoutes(stops, google)];
   });
-  const throttleCreateMarkers = _.throttle(createMarkers, 15000);
+  const throttleCreateMarkers = _.throttle(createMarkers, 1000);
   return (
     <Map
       google={google}

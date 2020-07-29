@@ -4,16 +4,19 @@ import { fetchReverseGeoCode } from '../utils';
 
 const Card = ({ title, routeName, vehicle }  ) => {
   const [ currVehicleLocation, setVehicleLocations ] = useState([]);
-  useEffect(async () => {
-    if(vehicle && Array.isArray(vehicle)){
-      const { lat, lon } = vehicle[0];
-      const vehicles = await Promise.all(vehicle.map(async ({ lon, lat, id}) => {
-        const getReverseData = await fetchReverseGeoCode(lat, lon);
-        const getReverseDataJson = await getReverseData.json();
-        return { ...getReverseDataJson, id};
-      }));
-      setVehicleLocations(vehicles);
+  useEffect(() => {
+    const fetchVehicleCrossStreets = async () => {
+      if(vehicle && Array.isArray(vehicle)){
+        const { lat, lon } = vehicle[0];
+        const vehicles = await Promise.all(vehicle.map(async ({ lon, lat, id}) => {
+          const getReverseData = await fetchReverseGeoCode(lat, lon);
+          const getReverseDataJson = await getReverseData.json();
+          return { ...getReverseDataJson, id};
+        }));
+        setVehicleLocations(vehicles);
+      }
     }
+    fetchVehicleCrossStreets();
   }, [title])
   return (
     <div class="card" >

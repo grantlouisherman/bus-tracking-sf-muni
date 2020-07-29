@@ -51,6 +51,7 @@ export const getPolylinesForRoutes = (stops, google) => {
 export const getCardsForRoutes = (markers, isMarkersUpdated) =>
   Object.keys(markers).map((markerKey) => (
     <Card
+      key={markerKey}
       title={markers[markerKey].title}
       routeName={markerKey}
       vehicle={markers[markerKey].vehicle}
