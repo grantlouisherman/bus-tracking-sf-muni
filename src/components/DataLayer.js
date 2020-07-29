@@ -18,19 +18,23 @@ const DataLayer = ({ children }) => {
   const [stops, setStops] = useState([]);
   const [tags, setTags] = useState([]);
   const [isMarkersUpdated, setMarkerUpdate] = useState(false);
-  const [dataFetchingInterval, setDataFetchingInterval ] = useState(15000);
-  const MAX_DELAY = 2147483647;
+  const [dataFetchingInterval, setDataFetchingInterval ] = useState(false);
   const fetchDataAtInterval = async () => {
     const routes = await createRoutesFromTags(tags);
     const updatedRouteConfigTable = updateOldDataWithNewVehicleLocations(routes, markers);
     intervalDataRef.current.markers = updatedRouteConfigTable;
     setMarkerUpdate(!isMarkersUpdated)
+    setDataFetchingInterval(!dataFetchingInterval);
     intervalDataRef.current.isIntervalStarted = true;
   }
-  const timer = setInterval(() => {
-    fetchDataAtInterval();
-    clearInterval(timer);
-  }, dataFetchingInterval);
+
+  useEffect(
+       () => {
+           const id = setInterval(_.throttle(fetchDataAtInterval,15000), 15000);
+           return () => clearInterval(id);
+       },
+       [dataFetchingInterval]
+   );
 
   useEffect(() => {
     const fetchRouteData = async () => {
